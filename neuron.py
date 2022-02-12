@@ -29,11 +29,29 @@ print(output)
 #     layer_outputs.append(neuron_output)
 # print(layer_outputs)
 
+# layer_outputs = []
+# for neuron_weights, bias in zip(weights,biases):
+#     neuron_output = 0
+#     for input, n_weight in zip(inputs, neuron_weights):
+#         neuron_output += input * n_weight
+#     neuron_output += bias
+#     layer_outputs.append(neuron_output)
+# print(layer_outputs)
+
+# layer_
+
 layer_outputs = []
-for neuron_weights, bias in zip(weights,biases):
+for neuron_weights, bias in zip(weights, biases):
     neuron_output = 0
-    for input, n_weight in zip(inputs, neuron_weights):
+    for n_weight, input in zip(neuron_weights, inputs):
         neuron_output += input * n_weight
     neuron_output += bias
     layer_outputs.append(neuron_output)
 print(layer_outputs)
+
+import numpy
+output = numpy.dot(weights, inputs) + biases
+print(output)
+print(numpy.shape(weights), "shape weights")
+print(numpy.shape(inputs), "shape inputs")
+print(numpy.shape(output), "shape output")
