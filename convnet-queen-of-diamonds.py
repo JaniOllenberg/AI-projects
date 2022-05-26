@@ -16,8 +16,9 @@ def create_training_data():
         path = os.path.join(DATADIR, category)
         class_num = CATEGORIES.index(category)
         for img in os.listdir(path):
-            img_array = cv2.imread(os.path.join(path,img), cv2.IMREAD_GRAYSCALE)
-            # img_array = cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB)
+            # img_array = cv2.imread(os.path.join(path,img), cv2.IMREAD_GRAYSCALE)
+            img_array = cv2.imread(os.path.join(path,img))
+            img_array = cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB)
             # plt.imshow(img_array)
             # plt.show()
             print(os.path.join(path,img))
@@ -52,8 +53,8 @@ for features, label in training_data[-200:]:
     x_test.append(features)
     y_test.append(label)
 
-x_train = np.array(x_train).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
-x_test = np.array(x_test).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
+x_train = np.array(x_train).reshape(-1, IMG_SIZE, IMG_SIZE, 3)
+x_test = np.array(x_test).reshape(-1, IMG_SIZE, IMG_SIZE, 3)
 # y_train = np.asarray(y_train).astype("uint8")
 y_train = np.array(y_train)
 y_test = np.array(y_test)
@@ -103,17 +104,18 @@ X = x_train/255.0
 y = y_train
 model = Sequential()
 
-model.add(Conv2D(64, (3, 3), input_shape=X.shape[1:]))
+model.add(Conv2D(32, (3, 3), input_shape=X.shape[1:]))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
-model.add(Conv2D(256, (3, 3)))
+model.add(Conv2D(32, (3, 3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 
 model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
-model.add(Dense(64))
+model.add(Dense(12))
+model.add(Dense(128))
 
 model.add(Dense(1))
 model.add(Activation('sigmoid'))
@@ -122,7 +124,9 @@ model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
 
-history = model.fit(X, y, batch_size=1, epochs=10, validation_split=0.1)
+model.summary()
+
+history = model.fit(X, y, batch_size=10, epochs=10, validation_split=0.1)
 
 history_dict = history.history
 print(history_dict.keys())
@@ -152,12 +156,13 @@ results = model.evaluate(x_test, y_test)
 
 print("results: ", results)
 
-model.predict(x_test)
+predictions = model.predict(x_test)
 
 import keyboard
-index = -200
+index = 0
 while True:
     if keyboard.is_pressed("q"):
+        print("Quit")
         break
     if keyboard.is_pressed("o"):
         filename = input("Filename to open: ")
@@ -165,7 +170,10 @@ while True:
         for features, label in training_data[-200:]:
             plt.imshow(features, cmap="gray")
             print("index: ", index)
-            index += 1
             print("label: ", label)
-            plt.show()
+            print("prediction: ", predictions[index])
+            print(f"y_test[{index}]: {y_test[index]}")
+            if predictions[index] != y_test[index]:
+                plt.show()
+            index += 1
         
