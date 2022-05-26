@@ -548,10 +548,16 @@ def train_network():
         # print(data_pixels_array)
     global data_colors
     # data_colors_array = np.empty((0,1))
-    data_colors_array = np.zeros((0,1), dtype='uint8')
+    print(len(data_colors))
+    global data_colors_array
+    data_colors_array = np.zeros(len(data_colors), dtype='uint8')
+    print(data_colors_array)
+    index = 0
     for row in data_colors:
-        color_row_array = np.array(row)
-        data_colors_array = np.vstack((data_colors_array, color_row_array))
+        # color_row_array = np.array(row)
+        # data_colors_array = np.vstack((data_colors_array, color_row_array))
+        data_colors_array[index] = row
+        index += 1
     print(data_colors_array)
     import nnfs
     from nnfs.datasets import spiral_data
@@ -567,26 +573,27 @@ def train_network():
     # print(type(X))
     # print(type(y))
     X = data_pixels_array
+    print(X)
     # y = np.empty((0,1))
     # for row in range(len(data_pixels_array)):
     #     y = np.vstack((y, np.array([1])))
     y = data_colors_array
     # Create Dense layer with 2 input features and 64 output values
-    dense1 = Layer_Dense(3, 64, weight_regularizer_l2=5e-4,
-                                bias_regularizer_l2=5e-4)
+    # dense1 = Layer_Dense(3, 64, weight_regularizer_l2=5e-4,
+                                # bias_regularizer_l2=5e-4)
 
     # Create ReLU activation (to be used with Dense layer):
-    activation1 = Activation_ReLU()
+    # activation1 = Activation_ReLU()
 
     # Create second Dense layer with 64 input features (as we take output
     # of previous layer here) and 3 output values (output values)
-    dense2 = Layer_Dense(64, 2)
+    # dense2 = Layer_Dense(64, 2)
 
     # Create Softmax classifier's combined loss and activation
-    loss_activation = Activation_Softmax_Loss_CategoricalCrossentropy()
+    # loss_activation = Activation_Softmax_Loss_CategoricalCrossentropy()
 
-    # Create optimizer
-    optimizer = Optimizer_Adam(learning_rate=0.02, decay=5e-7)
+    # # Create optimizer
+    # optimizer = Optimizer_Adam(learning_rate=0.02, decay=5e-7)
 
     # Train in loop
     for epoch in range(1001):
@@ -654,6 +661,11 @@ def inference(color):
     # Create test dataset
     # X_test, y_test = spiral_data(samples=100, classes=3)
     y_test = numpy.array([1])
+    global data_colors_array
+    # y_test = data_colors_array
+    print(y_test)
+    print(color)
+    # y_test = color
     
     # Perform a forward pass of our testing data through this layer
     dense1.forward(color)
@@ -703,6 +715,10 @@ dense2 = Layer_Dense(64, 2)
 
 # Create Softmax classifier's combined loss and activation
 loss_activation = Activation_Softmax_Loss_CategoricalCrossentropy()
+
+# Create optimizer
+optimizer = Optimizer_Adam(learning_rate=0.02, decay=5e-7)
+
 def main():
     t1 = threading.Thread(target=getPixel)
     t1.start()
